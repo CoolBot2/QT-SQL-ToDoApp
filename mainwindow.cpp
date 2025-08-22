@@ -79,6 +79,8 @@ void MainWindow::on_TaskList_itemDoubleClicked(QListWidgetItem *item)
     const bool strike = !f.strikeOut();
     f.setStrikeOut(strike);
     item->setFont(f);
+    //test git
+    qDebug()<<"i"
     QString taskName = item->data(Qt::UserRole).toString();
     QSqlDatabase db = QSqlDatabase::database();//sehr wichtiggggggggggg
 
