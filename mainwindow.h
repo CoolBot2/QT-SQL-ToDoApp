@@ -9,6 +9,8 @@
 #include "todo.h"
 #include "dialog.h"
 #include "delete_dialog.h"
+#include <QLineEdit>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -35,6 +37,8 @@ private slots:
 
     void on_pushButton_DeleteAll_clicked();
 
+
+    void on_TaskList_itemClicked(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;

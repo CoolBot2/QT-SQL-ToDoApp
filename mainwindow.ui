@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Todos</string>
   </property>
   <property name="styleSheet">
    <string notr="true">  background-color: lightblue;</string>
@@ -71,6 +71,13 @@ color:black;
       </property>
       <property name="text">
        <string>Delete ALL</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Notify</string>
       </property>
      </widget>
     </item>

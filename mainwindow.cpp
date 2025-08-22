@@ -17,9 +17,7 @@ MainWindow::~MainWindow()
 
 
 
-
 void MainWindow::AddTasksOnload(){
-    qDebug()<<"we fucked";
     if (QSqlDatabase::contains("qt_sql_default_connection")) {
         QSqlDatabase::removeDatabase("qt_sql_default_connection");
     }
@@ -35,6 +33,7 @@ void MainWindow::AddTasksOnload(){
         return;
     }
     ui->TaskList->clear();
+    int id=1;
     while (sql.next()) {
 
 
@@ -42,7 +41,7 @@ void MainWindow::AddTasksOnload(){
         QString TASK = sql.value(1).toString();
         QString TIME = sql.value(2).toString();
         bool isStriked = sql.value(3).toBool();
-        auto *entry = new QListWidgetItem(QString("%1: %2 \t \t \t \t     at %3 ").arg(TASKNAME).arg(TASK,TIME));
+        auto *entry = new QListWidgetItem(QString("%3-  %1: %2").arg(TASKNAME).arg(TASK).arg(id));
         entry->setFlags(entry->flags() | Qt::ItemIsUserCheckable);
         entry->setCheckState(Qt::Unchecked);
         // qDebug()<<isStriked;
@@ -53,7 +52,7 @@ void MainWindow::AddTasksOnload(){
         ui->TaskList->addItem(entry);
 
         entry->setData(Qt::UserRole, TASKNAME);
-
+        id++;
     }
 }
 
@@ -72,32 +71,7 @@ void MainWindow::on_pushButton_addTask_clicked()
 }
 
 
-void MainWindow::on_TaskList_itemDoubleClicked(QListWidgetItem *item)
-{
 
-    QFont f = item->font();
-    const bool strike = !f.strikeOut();
-    f.setStrikeOut(strike);
-    item->setFont(f);
-    //test git
-    qDebug()<<"i"
-    QString taskName = item->data(Qt::UserRole).toString();
-    QSqlDatabase db = QSqlDatabase::database();//sehr wichtiggggggggggg
-
-    if (!db.open()) {
-        QMessageBox::warning(this, "DB", "Kann DB nicht öffnen: " + db.lastError().text());
-        return;
-    }
-    QSqlQuery sql(db);
-    sql.prepare("UPDATE TODOLIST SET ISSTRIKEDOUT = :flag WHERE TASKNAME = :name");
-    sql.bindValue(":flag", strike);
-    sql.bindValue(":name", taskName);
-    if (!sql.exec()) {
-        QMessageBox::warning(this, "DB", "UPDATE-Fehler: " + sql.lastError().text());
-        return;
-    }
-
-}
 
 
 void MainWindow::on_pushButton_DeleteTask_clicked()
@@ -123,7 +97,6 @@ void MainWindow::on_pushButton_DeleteAll_clicked()
                                        QMessageBox::Yes | QMessageBox::No);
     if (reply != QMessageBox::Yes) return;
     QSqlDatabase db = QSqlDatabase::database();//sehr wichtiggggggggggg
-
     if (!db.open()) {
         QMessageBox::warning(this, "DB", "Kann DB nicht öffnen: " + db.lastError().text());
         return;
@@ -135,9 +108,64 @@ void MainWindow::on_pushButton_DeleteAll_clicked()
     }
     qDebug()<<"all tasks have been deleted";
     ui->TaskList->clear();
-
 }
 
 
 
 
+
+void MainWindow::on_TaskList_itemClicked(QListWidgetItem *item)
+{
+    // QFont f = item->font();
+    // const bool strike = !f.strikeOut();
+    // f.setStrikeOut(strike);
+    // item->setFont(f);
+    // QString taskName = item->data(Qt::UserRole).toString();
+    // QSqlDatabase db = QSqlDatabase::database();//sehr wichtiggggggggggg
+
+    // if (!db.open()) {
+    //     QMessageBox::warning(this, "DB", "Kann DB nicht öffnen: " + db.lastError().text());
+    //     return;
+    // }
+    // QSqlQuery sql(db);
+    // sql.prepare("UPDATE TODOLIST SET ISSTRIKEDOUT = :flag WHERE TASKNAME = :name");
+    // sql.bindValue(":flag", strike);
+    // sql.bindValue(":name", taskName);
+    // if (!sql.exec()) {
+    //     QMessageBox::warning(this, "DB", "UPDATE-Fehler: " + sql.lastError().text());
+    //     return;
+    // }
+
+}
+
+void MainWindow::on_TaskList_itemDoubleClicked(QListWidgetItem *item)
+{
+    QString taskName = item->data(Qt::UserRole).toString();
+
+    QSqlDatabase db = QSqlDatabase::database();//sehr wichtiggggggggggg
+    if (!db.open()) {
+        QMessageBox::warning(this, "DB", "Kann DB nicht öffnen: " + db.lastError().text());
+        return;
+    }
+    QLineEdit *edit = new QLineEdit(ui->TaskList);
+    QString itemText =item->text();
+    QString editText = itemText.mid(itemText.indexOf(':')+1);
+    edit->setText(editText);
+    ui->TaskList->setItemWidget(item, edit);
+    edit->selectAll();
+    connect(edit, &QLineEdit::editingFinished, this, [=] (/* opt. Varis*/) {
+        QSqlQuery sql(db);
+
+        QString newtext = edit->text();
+        item->setText(taskName+": "+newtext);
+        sql.prepare("UPDATE TODOLIST SET TASK = :text WHERE TASKNAME = :name");
+        sql.bindValue(":text", newtext);
+        sql.bindValue(":name", taskName);
+        if (!sql.exec()) {
+            QMessageBox::warning(this, "DB", "UPDATE-Fehler: " + sql.lastError().text());
+            return;
+        }
+        ui->TaskList->removeItemWidget(item);
+        edit->deleteLater();
+    });
+}

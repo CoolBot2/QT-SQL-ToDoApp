@@ -38,6 +38,9 @@
      <height>22</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>task name...</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="Task">
    <property name="geometry">
@@ -47,6 +50,15 @@
      <width>291</width>
      <height>181</height>
     </rect>
+   </property>
+   <property name="maxLength">
+    <number>3000</number>
+   </property>
+   <property name="dragEnabled">
+    <bool>true</bool>
+   </property>
+   <property name="placeholderText">
+    <string>describe your task...</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
