@@ -21,7 +21,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_QT
+class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
@@ -33,12 +33,13 @@ public:
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
-    void setupUi(QMainWindow *QT)
+    void setupUi(QMainWindow *MainWindow)
     {
-        if (QT->objectName().isEmpty())
-            QT->setObjectName("QT");
-        QT->resize(911, 589);
-        centralwidget = new QWidget(QT);
+        if (MainWindow->objectName().isEmpty())
+            MainWindow->setObjectName("MainWindow");
+        MainWindow->resize(792, 544);
+        MainWindow->setStyleSheet(QString::fromUtf8("  background-color: lightblue;"));
+        centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
         verticalLayout->setObjectName("verticalLayout");
@@ -46,10 +47,15 @@ public:
         TaskList->setObjectName("TaskList");
         QFont font;
         font.setFamilies({QString::fromUtf8("Times New Roman")});
-        font.setPointSize(20);
+        font.setPointSize(18);
         font.setBold(true);
         font.setItalic(true);
         TaskList->setFont(font);
+        TaskList->viewport()->setProperty("cursor", QVariant(QCursor(Qt::CursorShape::PointingHandCursor)));
+        TaskList->setStyleSheet(QString::fromUtf8("background-image: url(\"/home/daniel/Projects/Qt-Projects/ToDoApp/background.jpeg\");\n"
+"color:black;\n"
+""));
+        TaskList->setLineWidth(2);
 
         verticalLayout->addWidget(TaskList);
 
@@ -68,35 +74,36 @@ public:
 
         pushButton_DeleteAll = new QPushButton(centralwidget);
         pushButton_DeleteAll->setObjectName("pushButton_DeleteAll");
+        pushButton_DeleteAll->setStyleSheet(QString::fromUtf8("  background-color: black;"));
 
         verticalLayout->addWidget(pushButton_DeleteAll);
 
-        QT->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(QT);
+        MainWindow->setCentralWidget(centralwidget);
+        menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 911, 20));
-        QT->setMenuBar(menubar);
-        statusbar = new QStatusBar(QT);
+        menubar->setGeometry(QRect(0, 0, 792, 20));
+        MainWindow->setMenuBar(menubar);
+        statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
-        QT->setStatusBar(statusbar);
+        MainWindow->setStatusBar(statusbar);
 
-        retranslateUi(QT);
+        retranslateUi(MainWindow);
 
-        QMetaObject::connectSlotsByName(QT);
+        QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
-    void retranslateUi(QMainWindow *QT)
+    void retranslateUi(QMainWindow *MainWindow)
     {
-        QT->setWindowTitle(QCoreApplication::translate("QT", "MainWindow", nullptr));
-        pushButton_addTask->setText(QCoreApplication::translate("QT", "Add", nullptr));
-        pushButton_DeleteTask->setText(QCoreApplication::translate("QT", "Delete", nullptr));
-        pushButton_DeleteAll->setText(QCoreApplication::translate("QT", "Delete ALL", nullptr));
+        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        pushButton_addTask->setText(QCoreApplication::translate("MainWindow", "Add", nullptr));
+        pushButton_DeleteTask->setText(QCoreApplication::translate("MainWindow", "Delete", nullptr));
+        pushButton_DeleteAll->setText(QCoreApplication::translate("MainWindow", "Delete ALL", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class QT: public Ui_QT {};
+    class MainWindow: public Ui_MainWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE

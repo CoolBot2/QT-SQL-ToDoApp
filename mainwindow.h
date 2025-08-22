@@ -35,6 +35,7 @@ private slots:
 
     void on_pushButton_DeleteAll_clicked();
 
+
 private:
     Ui::MainWindow *ui;
 };

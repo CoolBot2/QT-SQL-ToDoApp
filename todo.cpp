@@ -1,13 +1,16 @@
 #include "todo.h"
 unsigned int todo::currentID = 1;
-todo::todo(const string& name, const string& task):taskName(name),ID(currentID++) ,task(task){
+todo::todo(const string& name, const string& task):taskName(name),ID(currentID++) ,task(task),strikedout(false){
     auto now = std::chrono::system_clock::now();
 
     time_t timec = std::chrono::system_clock::to_time_t(now);
     this->timestamp = ctime(&timec);
     cout<<ID<< " todo task named: "<<taskName<<" created at "<<timestamp<<endl;
 }
-
+inline const char * const BoolToString(bool b)
+{
+    return b ? "true" : "false";
+}
 todo::~todo(){
     cout<<"task "<<ID<<" deleted"<<endl;
 }
@@ -51,13 +54,14 @@ void todo::saveToDB(){
 
                                   "TASKNAME TEXT NOT NULL,"
                                   "TASK TEXT NOT NULL,"
-                                  "TIME TEXT NOT NULL"
+                                  "TIME TEXT NOT NULL,"
+                                  "ISSTRIKEDOUT BOOL"
                                   ");";
     sqlite3_exec(db,sql_createTable,0,0,&errMsg);
     std::string ts = timestamp;
     if (!ts.empty() && ts.back() == '\n') ts.pop_back();
     string sql_insertElement =
-        "INSERT INTO TODOLIST(TASKNAME,TASK,TIME) VALUES('" + taskName + "','" + task + "','" + ts+ "');";
+        "INSERT INTO TODOLIST(TASKNAME,TASK,TIME,ISSTRIKEDOUT) VALUES('" + taskName + "','" + task + "','" + ts+ "','"+BoolToString(strikedout)+"');";
     int cmd = sqlite3_exec(db,sql_insertElement.c_str(),0,0,&errMsg);
     if( cmd != SQLITE_OK ){
         cerr<< "SQL error:"<< errMsg<<endl;
@@ -79,4 +83,15 @@ QString todo::getTask(){
 }
 QString todo::getTimestamp(){
     return QString::fromStdString(timestamp);
+}
+
+int todo::getId(){
+    return ID;
+}
+
+void todo::setStrikedout(){
+    strikedout=!strikedout;
+}
+bool todo::getStrikedout(){
+    return strikedout;
 }

@@ -30,7 +30,7 @@ void MainWindow::AddTasksOnload(){
         return;
     }
     QSqlQuery sql(db);
-    if (!sql.exec("SELECT TASKNAME, TASK, TIME FROM TODOLIST")) {
+    if (!sql.exec("SELECT TASKNAME, TASK, TIME, ISSTRIKEDOUT FROM TODOLIST")) {
         //QMessageBox::warning(this, "DB", "SELECT-Fehler: " + sql.lastError().text());
         return;
     }
@@ -41,9 +41,18 @@ void MainWindow::AddTasksOnload(){
         QString TASKNAME = sql.value(0).toString();
         QString TASK = sql.value(1).toString();
         QString TIME = sql.value(2).toString();
+        bool isStriked = sql.value(3).toBool();
+        auto *entry = new QListWidgetItem(QString("%1: %2 \t \t \t \t     at %3 ").arg(TASKNAME).arg(TASK,TIME));
+        entry->setFlags(entry->flags() | Qt::ItemIsUserCheckable);
+        entry->setCheckState(Qt::Unchecked);
+        // qDebug()<<isStriked;
+        if(isStriked){
+            QFont f = entry->font();
+            f.setStrikeOut(isStriked);
+            entry->setFont(f);        }
+        ui->TaskList->addItem(entry);
 
-        ui->TaskList->addItem(QString("%1: %2 \t \t \t \t     at %3 ").arg(TASKNAME).arg(TASK,TIME));
-
+        entry->setData(Qt::UserRole, TASKNAME);
 
     }
 }
@@ -51,16 +60,12 @@ void MainWindow::AddTasksOnload(){
 void MainWindow::on_pushButton_addTask_clicked()
 {
     Dialog addTask;
+
+
     if(addTask.exec()==QDialog::Accepted){
         todo * task = addTask.CreateTask();
         task->saveToDB();
-       QString entry = QString("%1: %2 \t \t \t \t     at %3")
-                              .arg((task->getTaskName()))
-                              .arg((task->getTask()))
-                              .arg((task->getTimestamp()));
-
-        ui->TaskList->addItem(entry);
-
+       AddTasksOnload();
     } else{
         qDebug()<<"benutzer hat cancel geclickt";
     }
@@ -69,10 +74,26 @@ void MainWindow::on_pushButton_addTask_clicked()
 
 void MainWindow::on_TaskList_itemDoubleClicked(QListWidgetItem *item)
 {
-    auto reply = QMessageBox::question(this, "Delete Task",
-                                       "Do you really want to delete this task?",
-                                       QMessageBox::Yes | QMessageBox::No);
-    if (reply != QMessageBox::Yes) return;
+
+    QFont f = item->font();
+    const bool strike = !f.strikeOut();
+    f.setStrikeOut(strike);
+    item->setFont(f);
+    QString taskName = item->data(Qt::UserRole).toString();
+    QSqlDatabase db = QSqlDatabase::database();//sehr wichtiggggggggggg
+
+    if (!db.open()) {
+        QMessageBox::warning(this, "DB", "Kann DB nicht öffnen: " + db.lastError().text());
+        return;
+    }
+    QSqlQuery sql(db);
+    sql.prepare("UPDATE TODOLIST SET ISSTRIKEDOUT = :flag WHERE TASKNAME = :name");
+    sql.bindValue(":flag", strike);
+    sql.bindValue(":name", taskName);
+    if (!sql.exec()) {
+        QMessageBox::warning(this, "DB", "UPDATE-Fehler: " + sql.lastError().text());
+        return;
+    }
 
 }
 
@@ -107,11 +128,14 @@ void MainWindow::on_pushButton_DeleteAll_clicked()
     }
     QSqlQuery sql(db);
     if (!sql.exec("DELETE FROM TODOLIST")) {
-        QMessageBox::warning(this, "DB", "SELECT-Fehler: " + sql.lastError().text());
+        QMessageBox::warning(this, "DB", "DELETE-Fehler: " + sql.lastError().text());
         return;
     }
     qDebug()<<"all tasks have been deleted";
     ui->TaskList->clear();
 
 }
+
+
+
 

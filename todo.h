@@ -18,6 +18,7 @@ private:
     string timestamp;
     unsigned int ID;
     string task;
+    bool strikedout;
 
 
 public:
@@ -28,7 +29,9 @@ public:
     QString getTaskName();
     QString getTask();
     QString getTimestamp();
-
+    int getId();
+    void setStrikedout();
+    bool getStrikedout();
 
 };
 #endif // TODO_H

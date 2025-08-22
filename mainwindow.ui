@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>911</width>
-    <height>589</height>
+    <width>792</width>
+    <height>544</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">  background-color: lightblue;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -20,10 +23,21 @@
       <property name="font">
        <font>
         <family>Times New Roman</family>
-        <pointsize>20</pointsize>
+        <pointsize>18</pointsize>
         <italic>true</italic>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="cursor" stdset="0">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-image: url(&quot;/home/daniel/Projects/Qt-Projects/ToDoApp/background.jpeg&quot;);
+color:black;
+</string>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
       </property>
      </widget>
     </item>
@@ -52,6 +66,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="pushButton_DeleteAll">
+      <property name="styleSheet">
+       <string notr="true">  background-color: black;</string>
+      </property>
       <property name="text">
        <string>Delete ALL</string>
       </property>
@@ -64,7 +81,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>911</width>
+     <width>792</width>
      <height>20</height>
     </rect>
    </property>
